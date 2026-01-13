@@ -48,6 +48,10 @@ h1 {
   margin: 0;
 }
 
+.tagged {
+  background-color: red;
+}
+
 .toolbar {
   margin: 20px 0;
   text-align: center;

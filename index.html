@@ -25,10 +25,12 @@
       <div class="card" data-id="1" data-priority="high" data-status="todo" draggable="true">
         <h3>Tâche 1</h3>
         <p>Contenu de la tâche</p>
+        <p class="tag">Sport</p>
       </div>
       <div class="card" data-id="2" data-priority="low" data-status="todo" draggable="true">
         <h3>Tâche 2</h3>
         <p>Autre contenu</p>
+        <p class="tag">Administratif</p>
       </div>
     </div>
 
@@ -37,6 +39,7 @@
       <div class="card" data-id="3" data-priority="medium" data-status="doing" draggable="true">
         <h3>Tâche 3</h3>
         <p>En cours de traitement</p>
+        <p class="tag">Bien-être</p>
       </div>
     </div>
 
@@ -45,8 +48,19 @@
       <div class="card" data-id="4" data-priority="high" data-status="done" draggable="true">
         <h3>Tâche 4</h3>
         <p>Terminé</p>
+        <p class="tag">Bien-être</p>
       </div>
     </div>
+  </div>
+
+  <!-- Zone pour éventuellement des boutons, un champ de recherche, etc. -->
+  <div class="toolbar">
+    <button id="addCardBtn">Ajouter une carte</button>
+    <input type="text" id="searchInput" placeholder="Rechercher une carte..." />
+    <button id="sortByPriorityBtn">Trier par priorité</button>
+    <select class="selectTags" name="" id="">
+      
+    </select>
   </div>
 
   <script src="script.js"></script>
