@@ -5,7 +5,6 @@ window.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("searchInput");
   const sortByPriorityBtn = document.getElementById("sortByPriorityBtn");
     const cards = Array.from(document.getElementsByClassName("card"))
-  console.log(cards)
 
    // Création dynamique de la modale
   function createModal() {
