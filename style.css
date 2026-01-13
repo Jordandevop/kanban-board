@@ -3,6 +3,9 @@ body {
   margin: 0;
   padding: 20px;
   background: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 h1 {
@@ -21,25 +24,32 @@ h1 {
   border: 1px solid #ccc;
   width: 250px;
   padding: 10px;
-  border-radius: 5px;
+  border-radius: 10px;
   min-height: 300px;
 }
 
 .column h2 {
   text-align: center;
   margin: 10px 0;
+  color: #fff;
 }
 
 .card {
-  background: #eee;
+  background: #fff;
   margin: 10px 0;
   padding: 10px;
-  border-radius: 3px;
+  border-radius: 10px;
   cursor: grab; /* Indication pour drag & drop (optionnel) */
+}
+.card h3{
+  margin-top: 0;
+}
+.card p{
+  margin: 0;
 }
 
 .toolbar {
-  margin: 20px auto;
+  margin: 20px 0;
   text-align: center;
 }
 
@@ -128,21 +138,44 @@ h1 {
 }
 
 .delete-btn {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background: #f44336;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 25px;
-  height: 25px;
-  cursor: pointer;
-  font-size: 18px;
-  line-height: 1;
-  transition: background-color 0.2s;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 0 10px;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    transition: background-color 0.2s;
 }
 
 .delete-btn:hover {
   background-color: #da190b;
+}
+
+.column[data-status="todo"] {
+  background-image: url("./abstract-flowing-neon-wave-background_53876-101942.avif");
+  background-size: cover;
+}
+.column[data-status="done"] {
+  background-image: url("./conception-papier-peint-moderne-lignes-geometriques-abstraites-lumineuses_1017-60099.avif");
+  background-size: cover;
+}
+.column[data-status="done"] h2 {
+  color: #000;
+}
+.column[data-status="doing"] {
+  background-image: url("./modern-gold-background-free-vector.jpg");
+  background-size: cover;
+}
+
+nav{
+  display: flex;
+  justify-content: space-between ;
+  padding: 0 64px;
+  width: 856px;
 }

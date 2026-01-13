@@ -8,7 +8,16 @@
 </head>
 
 <body>
-  <h1>Kanban Board</h1>
+  
+  <nav>
+    <h1>Kanban Board</h1>
+      <!-- Zone pour éventuellement des boutons, un champ de recherche, etc. -->
+    <div class="toolbar">
+      <button id="addCardBtn">Ajouter une carte</button>
+      <input type="text" id="searchInput" placeholder="Rechercher une carte..." />
+      <button id="sortByPriorityBtn">Trier par priorité</button>
+    </div>
+  </nav>
 
   <div class="kanban">
     <div class="column" data-status="todo">
@@ -38,13 +47,6 @@
         <p>Terminé</p>
       </div>
     </div>
-  </div>
-
-  <!-- Zone pour éventuellement des boutons, un champ de recherche, etc. -->
-  <div class="toolbar">
-    <button id="addCardBtn">Ajouter une carte</button>
-    <input type="text" id="searchInput" placeholder="Rechercher une carte..." />
-    <button id="sortByPriorityBtn">Trier par priorité</button>
   </div>
 
   <script src="script.js"></script>
