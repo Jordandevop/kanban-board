@@ -4,9 +4,70 @@ window.addEventListener("DOMContentLoaded", () => {
   const addCardBtn = document.getElementById("addCardBtn");
   const searchInput = document.getElementById("searchInput");
   const sortByPriorityBtn = document.getElementById("sortByPriorityBtn");
-    const cards = Array.from(document.getElementsByClassName("card"))
+  const columns = document.querySelectorAll(".column");
+  let draggedCard = null;
+  let cards = Array.from(document.querySelectorAll(".card"));
 
-  // Création dynamique de la modale
+  // Fonction pour mettre à jour la liste des cartes
+  function updateCardsList() {
+    cards = Array.from(document.querySelectorAll(".card"));
+  }
+
+  // ===== DRAG & DROP =====
+  function enableDragAndDrop(card) {
+    card.setAttribute("draggable", "true");
+    
+    card.addEventListener("dragstart", () => {
+      draggedCard = card;
+      card.style.opacity = "0.5";
+    });
+    
+    card.addEventListener("dragend", () => {
+      draggedCard = null;
+      card.style.opacity = "1";
+    });
+  }
+
+  document.querySelectorAll(".card").forEach(card => {
+    enableDragAndDrop(card);
+  });
+
+  columns.forEach(column => {
+    column.addEventListener("dragover", (e) => {
+      e.preventDefault();
+    });
+    
+    column.addEventListener("drop", () => {
+      if (draggedCard) {
+        column.appendChild(draggedCard);
+        draggedCard.dataset.status = column.dataset.status;
+        console.log(`Carte déplacée vers ${column.dataset.status}`);
+      }
+    });
+  });
+
+  // ===== DELETE BUTTON =====
+  function addDeleteButton(card) {
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "×";
+    deleteBtn.className = "delete-btn";
+    
+    deleteBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      card.remove();
+      updateCardsList();
+      console.log("Carte supprimée");
+    });
+    
+    card.style.position = "relative";
+    card.appendChild(deleteBtn);
+  }
+
+  document.querySelectorAll(".card").forEach(card => {
+    addDeleteButton(card);
+  });
+
+  // ===== MODAL =====
   function createModal() {
     const modal = document.createElement("div");
     modal.className = "modal";
@@ -70,18 +131,19 @@ window.addEventListener("DOMContentLoaded", () => {
       newCard.classList.add("card");
       newCard.setAttribute("data-id", newID);
       newCard.setAttribute("data-priority", priority);
-      newCard.setAttribute("draggable", "true");
+      newCard.setAttribute("data-status", "todo");
       newCard.innerHTML = `
         <h3>${title}</h3>
         <p>${description}</p>
       `;
 
-      // Ajouter le drag & drop à la nouvelle carte
-      newCard.addEventListener("dragstart", () => draggedCard = newCard);
-      newCard.addEventListener("dragend", () => draggedCard = null);
+      enableDragAndDrop(newCard);
+      addDeleteButton(newCard);
 
       const todoColumn = document.querySelector('.column[data-status="todo"]');
       todoColumn.appendChild(newCard);
+
+      updateCardsList();
 
       console.log("Carte ajoutée dans la colonne To Do !");
 
@@ -89,18 +151,19 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // ===== SEARCH =====
   searchInput.addEventListener("input", () => {
-    const keyword = searchInput.value;
+    const keyword = searchInput.value.toLowerCase();
 
     cards.forEach(card => {
-      const title = card.querySelector("h3").textContent;
-      const content = card.querySelector("p").textContent;
+      const title = card.querySelector("h3").textContent.toLowerCase();
+      const content = card.querySelector("p").textContent.toLowerCase();
       const match = title.includes(keyword) || content.includes(keyword);
       card.style.display = match ? "" : "none";
     });
   });
 
   sortByPriorityBtn.addEventListener("click", () => {
-    // ...
+    //..
   });
 });
