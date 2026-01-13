@@ -5,57 +5,58 @@ window.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("searchInput");
   const sortByPriorityBtn = document.getElementById("sortByPriorityBtn");
   const columns = document.querySelectorAll(".column");
+  const selectTagsDom = document.querySelector(".selectTags");
   let draggedCard = null;
   let cards = Array.from(document.querySelectorAll(".card"));
 
-  const tagsDom = Array.from(document.getElementsByClassName("tag"))
-  let tags = [];
-  const selectDom = Array.from(document.getElementsByClassName("selectTags"))
-
-
-  getAllTags()
-
-  function clearDoubles(tags) {
-   const tagsFinal = [...new Set(tags)];
-   return tagsFinal;
-  }
-
-  function getAllTags () {
-    
-    tagsDom.forEach((tag) => {
-      tags.push(tag.innerHTML)
-    })
-    populateSelect(clearDoubles(tags))
+  // ===== TAGS SYSTEM =====
+  function getAllTags() {
+    const tagsDom = Array.from(document.querySelectorAll(".tag"));
+    const tags = tagsDom.map(tag => tag.textContent);
+    const uniqueTags = [...new Set(tags)];
+    populateSelect(uniqueTags);
   }
 
   function populateSelect(tags) {
-
-    for(let i=0; i<tags.length; i++) {
-          let newOption = document.createElement("option");
-          let newContent = document.createTextNode(tags[i]);
-          newOption.appendChild(newContent);
-          selectDom[0].appendChild(newOption);
-    }
-  }
-
-  function changeCardColor(e) {
-    for (let i=0; i<tagsDom.length; i++) {
-      tagsDom[i].parentNode.classList.remove("tagged")
-      if (e.target.value == tagsDom[i].textContent) {
-        tagsDom[i].parentNode.setAttribute("background-color", "red")
-        tagsDom[i].parentNode.classList.toggle("tagged")
-      }
-    }
+    selectTagsDom.innerHTML = '<option value="">Tous les tags</option>';
     
+    tags.forEach(tag => {
+      const newOption = document.createElement("option");
+      newOption.value = tag;
+      newOption.textContent = tag;
+      selectTagsDom.appendChild(newOption);
+    });
   }
 
-  selectDom[0].addEventListener("change", changeCardColor)
+  function filterByTag(selectedTag) {
+    const allCards = document.querySelectorAll(".card");
+    
+    allCards.forEach(card => {
+      card.classList.remove("tagged");
+      
+      if (!selectedTag) {
+        card.style.display = "";
+      } else {
+        const cardTag = card.querySelector(".tag");
+        if (cardTag && cardTag.textContent === selectedTag) {
+          card.classList.add("tagged");
+          card.style.display = "";
+        } else {
+          card.style.display = "none";
+        }
+      }
+    });
+  }
 
+  selectTagsDom.addEventListener("change", (e) => {
+    filterByTag(e.target.value);
+  });
 
+  getAllTags();
 
-  // Fonction pour mettre à jour la liste des cartes
   function updateCardsList() {
     cards = Array.from(document.querySelectorAll(".card"));
+    getAllTags(); 
   }
 
   // ===== DRAG & DROP =====
@@ -86,7 +87,7 @@ window.addEventListener("DOMContentLoaded", () => {
       if (draggedCard) {
         column.appendChild(draggedCard);
         draggedCard.dataset.status = column.dataset.status;
-        saveToLocalStorage(); 
+        saveToLocalStorage();
         console.log(`Carte déplacée vers ${column.dataset.status}`);
       }
     });
@@ -112,7 +113,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // ===== PRIORITY BADGE =====
   function addPriorityBadge(card) {
-    if( card.querySelector(".priority-badge")) {
+    if (card.querySelector(".priority-badge")) {
       return;
     }
     const priority = card.dataset.priority;
@@ -144,6 +145,9 @@ window.addEventListener("DOMContentLoaded", () => {
         
         <label>Description :</label>
         <textarea id="cardDescription" required></textarea>
+        
+        <label>Tag :</label>
+        <input type="text" id="cardTag" placeholder="Ex: Sport, Administratif, Bien-être...">
         
         <label>Priorité :</label>
         <select id="cardPriority" required>
@@ -185,6 +189,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
       const title = document.getElementById("cardTitle").value;
       const description = document.getElementById("cardDescription").value;
+      const tag = document.getElementById("cardTag").value.trim();
       const priority = document.getElementById("cardPriority").value;
 
       const newID = Date.now();
@@ -196,6 +201,7 @@ window.addEventListener("DOMContentLoaded", () => {
       newCard.innerHTML = `
         <h3>${title}</h3>
         <p>${description}</p>
+        ${tag ? `<p class="tag">${tag}</p>` : ''}
       `;
 
       enableDragAndDrop(newCard);
@@ -239,72 +245,75 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   // ===== LOCAL STORAGE =====
- function getCardsData() {
-  const allCards = Array.from(document.querySelectorAll(".card"));
-  const cardsArray = []
+  function getCardsData() {
+    const allCards = Array.from(document.querySelectorAll(".card"));
+    const cardsArray = [];
 
-  allCards.forEach(card => {
-    const cardData = {
-      id: card.dataset.id,
-      title: card.querySelector("h3").textContent,
-      description: card.querySelector("p").textContent,
-      priority: card.dataset.priority,
-      status: card.dataset.status
-    };
-    cardsArray.push(cardData);
-  });
-  
-  return cardsArray;
- 
-}
+    allCards.forEach(card => {
+      const tagElement = card.querySelector(".tag");
+      const cardData = {
+        id: card.dataset.id,
+        title: card.querySelector("h3").textContent,
+        description: card.querySelector("p:not(.tag)").textContent,
+        tag: tagElement ? tagElement.textContent : "",
+        priority: card.dataset.priority,
+        status: card.dataset.status
+      };
+      cardsArray.push(cardData);
+    });
 
-function saveToLocalStorage() {
-  const cardsData = getCardsData();
-  localStorage.setItem("kanbanCards", JSON.stringify(cardsData));
-  console.log("Cartes sauvegardées dans le local storage.");
-}
-
-function loadFromLocalStorage() {
-  const savedData = localStorage.getItem("kanbanCards");
-  
-  if (!savedData) {
-    console.log("Aucune donnée trouvée dans le local storage.");
-    return; 
+    return cardsArray;
   }
 
-  const cardsData = JSON.parse(savedData);
-  console.log("Cartes chargées depuis le LocalStorage :", cardsData);
+  function saveToLocalStorage() {
+    const cardsData = getCardsData();
+    localStorage.setItem("kanbanCards", JSON.stringify(cardsData));
+    console.log("Cartes sauvegardées dans le local storage.");
+  }
 
-  columns.forEach(column => {
-    const existingCards = column.querySelectorAll(".card");
-    existingCards.forEach(card => card.remove());
-  });
+  function loadFromLocalStorage() {
+    const savedData = localStorage.getItem("kanbanCards");
 
-  cardsData.forEach(cardData => {
-    const newCard = document.createElement("div");
-    newCard.classList.add("card");
-    newCard.setAttribute("data-id", cardData.id);
-    newCard.setAttribute("data-priority", cardData.priority);
-    newCard.setAttribute("data-status", cardData.status);
-    newCard.innerHTML = `
-      <h3>${cardData.title}</h3>
-      <p>${cardData.description}</p>
-    `;
-
-    enableDragAndDrop(newCard);
-    addDeleteButton(newCard);
-    addPriorityBadge(newCard);
-  
-    const targetColumn = document.querySelector(`.column[data-status="${cardData.status}"]`);
-    if (targetColumn) {
-      targetColumn.appendChild(newCard);
-    }else{
-       console.error(`Colonne introuvable pour le status: "${cardData.status}"`);
-      console.error("Carte ignorée:", cardData);
+    if (!savedData) {
+      console.log("Aucune donnée trouvée dans le local storage.");
+      return;
     }
-  });
 
-  updateCardsList();
-}
-loadFromLocalStorage();
+    const cardsData = JSON.parse(savedData);
+    console.log("Cartes chargées depuis le LocalStorage :", cardsData);
+
+    columns.forEach(column => {
+      const existingCards = column.querySelectorAll(".card");
+      existingCards.forEach(card => card.remove());
+    });
+
+    cardsData.forEach(cardData => {
+      const newCard = document.createElement("div");
+      newCard.classList.add("card");
+      newCard.setAttribute("data-id", cardData.id);
+      newCard.setAttribute("data-priority", cardData.priority);
+      newCard.setAttribute("data-status", cardData.status);
+      newCard.innerHTML = `
+        <h3>${cardData.title}</h3>
+        <p>${cardData.description}</p>
+        ${cardData.tag ? `<p class="tag">${cardData.tag}</p>` : ''}
+      `;
+
+      enableDragAndDrop(newCard);
+      addDeleteButton(newCard);
+      addPriorityBadge(newCard);
+
+      const targetColumn = document.querySelector(`.column[data-status="${cardData.status}"]`);
+      if (targetColumn) {
+        targetColumn.appendChild(newCard);
+      } else {
+        console.error(`Colonne introuvable pour le status: "${cardData.status}"`);
+        console.error("Carte ignorée:", cardData);
+      }
+    });
+
+    updateCardsList();
+  }
+
+  loadFromLocalStorage();
 });

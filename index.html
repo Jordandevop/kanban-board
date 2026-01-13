@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
   <meta charset="UTF-8" />
   <title>Kanban Board</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
   
   <nav>
     <h1>Kanban Board</h1>
-      <!-- Zone pour éventuellement des boutons, un champ de recherche, etc. -->
     <div class="toolbar">
       <button id="addCardBtn">Ajouter une carte</button>
       <input type="text" id="searchInput" placeholder="Rechercher une carte..." />
       <button id="sortByPriorityBtn">Trier par priorité</button>
+      <select class="selectTags">
+        <option value="">Tous les tags</option>
+      </select>
     </div>
   </nav>
 
@@ -53,17 +53,6 @@
     </div>
   </div>
 
-  <!-- Zone pour éventuellement des boutons, un champ de recherche, etc. -->
-  <div class="toolbar">
-    <button id="addCardBtn">Ajouter une carte</button>
-    <input type="text" id="searchInput" placeholder="Rechercher une carte..." />
-    <button id="sortByPriorityBtn">Trier par priorité</button>
-    <select class="selectTags" name="" id="">
-      
-    </select>
-  </div>
-
   <script src="script.js"></script>
 </body>
-
 </html>
