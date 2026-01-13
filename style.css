@@ -35,7 +35,8 @@ h1 {
   margin: 10px 0;
   padding: 10px;
   border-radius: 3px;
-  cursor: grab; /* Indication pour drag & drop (optionnel) */
+  cursor: grab;
+  /* Indication pour drag & drop (optionnel) */
 }
 
 .toolbar {
@@ -145,4 +146,26 @@ h1 {
 
 .delete-btn:hover {
   background-color: #da190b;
+}
+
+.priority-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 5px;
+}
+
+.priority-badge.high {
+  background: #e53935;
+}
+
+.priority-badge.medium {
+  background: #fb8c00;
+}
+
+.priority-badge.low {
+  background: #43a047;
 }
