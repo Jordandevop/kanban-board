@@ -157,6 +157,28 @@ h1 {
   background-color: #da190b;
 }
 
+.priority-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 5px;
+}
+
+.priority-badge.high {
+  background: #e53935;
+}
+
+.priority-badge.medium {
+  background: #fb8c00;
+}
+
+.priority-badge.low {
+  background: #43a047;
+}
+
 .column[data-status="todo"] {
   background-image: url("./abstract-flowing-neon-wave-background_53876-101942.avif");
   background-size: cover;
