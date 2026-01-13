@@ -8,17 +8,26 @@
 </head>
 
 <body>
-  <h1>Kanban Board</h1>
+  
+  <nav>
+    <h1>Kanban Board</h1>
+      <!-- Zone pour éventuellement des boutons, un champ de recherche, etc. -->
+    <div class="toolbar">
+      <button id="addCardBtn">Ajouter une carte</button>
+      <input type="text" id="searchInput" placeholder="Rechercher une carte..." />
+      <button id="sortByPriorityBtn">Trier par priorité</button>
+    </div>
+  </nav>
 
   <div class="kanban">
     <div class="column" data-status="todo">
       <h2>To Do</h2>
-      <div class="card" data-id="1" data-priority="high" draggable="true">
+      <div class="card" data-id="1" data-priority="high" data-status="todo" draggable="true">
         <h3>Tâche 1</h3>
         <p>Contenu de la tâche</p>
         <p class="tag">Sport</p>
       </div>
-      <div class="card" data-id="2" data-priority="low" draggable="true">
+      <div class="card" data-id="2" data-priority="low" data-status="todo" draggable="true">
         <h3>Tâche 2</h3>
         <p>Autre contenu</p>
         <p class="tag">Administratif</p>
@@ -27,7 +36,7 @@
 
     <div class="column" data-status="doing">
       <h2>Doing</h2>
-      <div class="card" data-id="3" data-priority="medium" draggable="true">
+      <div class="card" data-id="3" data-priority="medium" data-status="doing" draggable="true">
         <h3>Tâche 3</h3>
         <p>En cours de traitement</p>
         <p class="tag">Bien-être</p>
@@ -36,7 +45,7 @@
 
     <div class="column" data-status="done">
       <h2>Done</h2>
-      <div class="card" data-id="4" data-priority="high" draggable="true">
+      <div class="card" data-id="4" data-priority="high" data-status="done" draggable="true">
         <h3>Tâche 4</h3>
         <p>Terminé</p>
         <p class="tag">Bien-être</p>
