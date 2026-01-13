@@ -16,12 +16,12 @@ window.addEventListener("DOMContentLoaded", () => {
   // ===== DRAG & DROP =====
   function enableDragAndDrop(card) {
     card.setAttribute("draggable", "true");
-    
+
     card.addEventListener("dragstart", () => {
       draggedCard = card;
       card.style.opacity = "0.5";
     });
-    
+
     card.addEventListener("dragend", () => {
       draggedCard = null;
       card.style.opacity = "1";
@@ -36,7 +36,7 @@ window.addEventListener("DOMContentLoaded", () => {
     column.addEventListener("dragover", (e) => {
       e.preventDefault();
     });
-    
+
     column.addEventListener("drop", () => {
       if (draggedCard) {
         column.appendChild(draggedCard);
@@ -52,7 +52,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "×";
     deleteBtn.className = "delete-btn";
-    
+
     deleteBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       card.remove();
@@ -60,13 +60,24 @@ window.addEventListener("DOMContentLoaded", () => {
       saveToLocalStorage();
       console.log("Carte supprimée");
     });
-    
+
     card.style.position = "relative";
     card.appendChild(deleteBtn);
   }
 
+  // ===== PRIORITY BADGE =====
+  function addPriorityBadge(card) {
+    const priority = card.dataset.priority;
+    const labels = { high: "Haute", medium: "Moyenne", low: "Basse" };
+    const badge = document.createElement("span");
+    badge.className = `priority-badge ${priority}`;
+    badge.textContent = labels[priority] || priority;
+    card.insertBefore(badge, card.firstChild);
+  }
+
   document.querySelectorAll(".card").forEach(card => {
     addDeleteButton(card);
+    addPriorityBadge(card);
   });
 
   // ===== MODAL =====
@@ -141,6 +152,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
       enableDragAndDrop(newCard);
       addDeleteButton(newCard);
+      addPriorityBadge(newCard);
 
       const todoColumn = document.querySelector('.column[data-status="todo"]');
       todoColumn.appendChild(newCard);
@@ -167,7 +179,14 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   sortByPriorityBtn.addEventListener("click", () => {
-    //..
+    const priorityOrder = { high: 1, medium: 2, low: 3 };
+
+    columns.forEach(column => {
+      const cardsInColumn = [...column.querySelectorAll(".card")];
+      cardsInColumn
+        .sort((a, b) => priorityOrder[a.dataset.priority] - priorityOrder[b.dataset.priority])
+        .forEach(card => column.appendChild(card));
+    });
   });
 
   // ===== LOCAL STORAGE =====
