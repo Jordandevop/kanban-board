@@ -67,6 +67,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // ===== PRIORITY BADGE =====
   function addPriorityBadge(card) {
+    if( card.querySelector(".priority-badge")) {
+      return;
+    }
     const priority = card.dataset.priority;
     const labels = { high: "Haute", medium: "Moyenne", low: "Basse" };
     const badge = document.createElement("span");
@@ -187,6 +190,7 @@ window.addEventListener("DOMContentLoaded", () => {
         .sort((a, b) => priorityOrder[a.dataset.priority] - priorityOrder[b.dataset.priority])
         .forEach(card => column.appendChild(card));
     });
+    saveToLocalStorage();
   });
 
   // ===== LOCAL STORAGE =====
@@ -244,6 +248,7 @@ function loadFromLocalStorage() {
 
     enableDragAndDrop(newCard);
     addDeleteButton(newCard);
+    addPriorityBadge(newCard);
   
     const targetColumn = document.querySelector(`.column[data-status="${cardData.status}"]`);
     if (targetColumn) {
