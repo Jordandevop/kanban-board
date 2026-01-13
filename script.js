@@ -4,10 +4,27 @@ window.addEventListener("DOMContentLoaded", () => {
   const addCardBtn = document.getElementById("addCardBtn");
   const searchInput = document.getElementById("searchInput");
   const sortByPriorityBtn = document.getElementById("sortByPriorityBtn");
-  const cards = document.querySelectorAll(".card");  
-  console.log(cards)
+  const columns = document.querySelectorAll(".column");
+  const cards = document.querySelectorAll(".card");
+  let draggedCard = null;
 
-   // Création dynamique de la modale
+  // Drag & Drop
+  cards.forEach(card => {
+    card.addEventListener("dragstart", () => draggedCard = card);
+    card.addEventListener("dragend", () => draggedCard = null);
+  });
+
+  columns.forEach(column => {
+    column.addEventListener("dragover", e => e.preventDefault());
+    column.addEventListener("drop", () => {
+      if (draggedCard) {
+        column.appendChild(draggedCard);
+        draggedCard.dataset.status = column.dataset.status;
+      }
+    });
+  });
+
+  // Création dynamique de la modale
   function createModal() {
     const modal = document.createElement("div");
     modal.className = "modal";
@@ -40,7 +57,6 @@ window.addEventListener("DOMContentLoaded", () => {
     return modal;
   }
 
-  // Éventuellement, on écoute les événements
   addCardBtn.addEventListener("click", () => {
     const modal = createModal();
     document.body.appendChild(modal);
@@ -48,21 +64,18 @@ window.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("addCardForm");
     const cancelBtn = document.getElementById("cancelBtn");
 
-    // Fermer la modale
     const closeModal = () => {
       document.body.removeChild(modal);
     };
 
     cancelBtn.addEventListener("click", closeModal);
 
-    // Fermer si on clique en dehors de la modale
     modal.addEventListener("click", (e) => {
       if (e.target === modal) {
         closeModal();
       }
     });
 
-    // Soumettre le formulaire
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
@@ -75,10 +88,15 @@ window.addEventListener("DOMContentLoaded", () => {
       newCard.classList.add("card");
       newCard.setAttribute("data-id", newID);
       newCard.setAttribute("data-priority", priority);
+      newCard.setAttribute("draggable", "true");
       newCard.innerHTML = `
         <h3>${title}</h3>
         <p>${description}</p>
       `;
+
+      // Ajouter le drag & drop à la nouvelle carte
+      newCard.addEventListener("dragstart", () => draggedCard = newCard);
+      newCard.addEventListener("dragend", () => draggedCard = null);
 
       const todoColumn = document.querySelector('.column[data-status="todo"]');
       todoColumn.appendChild(newCard);
@@ -90,18 +108,14 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   searchInput.addEventListener("input", () => {
-    const keyword = searchInput.value
-    console.log(keyword)
+    const keyword = searchInput.value;
 
     cards.forEach(card => {
-    const title = card.querySelector("h3").textContent;
-    const content = card.querySelector("p").textContent;
-
-    const match =
-    title.includes(keyword) || content.includes(keyword);
-
-    card.style.display = match ? "" : "none";
-  });
+      const title = card.querySelector("h3").textContent;
+      const content = card.querySelector("p").textContent;
+      const match = title.includes(keyword) || content.includes(keyword);
+      card.style.display = match ? "" : "none";
+    });
   });
 
   sortByPriorityBtn.addEventListener("click", () => {
