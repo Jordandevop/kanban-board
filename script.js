@@ -41,6 +41,7 @@ window.addEventListener("DOMContentLoaded", () => {
       if (draggedCard) {
         column.appendChild(draggedCard);
         draggedCard.dataset.status = column.dataset.status;
+        saveToLocalStorage(); 
         console.log(`Carte déplacée vers ${column.dataset.status}`);
       }
     });
@@ -56,6 +57,7 @@ window.addEventListener("DOMContentLoaded", () => {
       e.stopPropagation();
       card.remove();
       updateCardsList();
+      saveToLocalStorage();
       console.log("Carte supprimée");
     });
     
@@ -144,6 +146,7 @@ window.addEventListener("DOMContentLoaded", () => {
       todoColumn.appendChild(newCard);
 
       updateCardsList();
+      saveToLocalStorage();
 
       console.log("Carte ajoutée dans la colonne To Do !");
 
@@ -166,4 +169,73 @@ window.addEventListener("DOMContentLoaded", () => {
   sortByPriorityBtn.addEventListener("click", () => {
     //..
   });
+
+  // ===== LOCAL STORAGE =====
+ function getCardsData() {
+  const allCards = Array.from(document.querySelectorAll(".card"));
+  const cardsArray = []
+
+  allCards.forEach(card => {
+    const cardData = {
+      id: card.dataset.id,
+      title: card.querySelector("h3").textContent,
+      description: card.querySelector("p").textContent,
+      priority: card.dataset.priority,
+      status: card.dataset.status
+    };
+    cardsArray.push(cardData);
+  });
+  
+  return cardsArray;
+ 
+}
+
+function saveToLocalStorage() {
+  const cardsData = getCardsData();
+  localStorage.setItem("kanbanCards", JSON.stringify(cardsData));
+  console.log("Cartes sauvegardées dans le local storage.");
+}
+
+function loadFromLocalStorage() {
+  const savedData = localStorage.getItem("kanbanCards");
+  
+  if (!savedData) {
+    console.log("Aucune donnée trouvée dans le local storage.");
+    return; 
+  }
+
+  const cardsData = JSON.parse(savedData);
+  console.log("Cartes chargées depuis le LocalStorage :", cardsData);
+
+  columns.forEach(column => {
+    const existingCards = column.querySelectorAll(".card");
+    existingCards.forEach(card => card.remove());
+  });
+
+  cardsData.forEach(cardData => {
+    const newCard = document.createElement("div");
+    newCard.classList.add("card");
+    newCard.setAttribute("data-id", cardData.id);
+    newCard.setAttribute("data-priority", cardData.priority);
+    newCard.setAttribute("data-status", cardData.status);
+    newCard.innerHTML = `
+      <h3>${cardData.title}</h3>
+      <p>${cardData.description}</p>
+    `;
+
+    enableDragAndDrop(newCard);
+    addDeleteButton(newCard);
+  
+    const targetColumn = document.querySelector(`.column[data-status="${cardData.status}"]`);
+    if (targetColumn) {
+      targetColumn.appendChild(newCard);
+    }else{
+       console.error(`Colonne introuvable pour le status: "${cardData.status}"`);
+      console.error("Carte ignorée:", cardData);
+    }
+  });
+
+  updateCardsList();
+}
+loadFromLocalStorage();
 });
