@@ -8,6 +8,51 @@ window.addEventListener("DOMContentLoaded", () => {
   let draggedCard = null;
   let cards = Array.from(document.querySelectorAll(".card"));
 
+  const tagsDom = Array.from(document.getElementsByClassName("tag"))
+  let tags = [];
+  const selectDom = Array.from(document.getElementsByClassName("selectTags"))
+
+
+  getAllTags()
+
+  function clearDoubles(tags) {
+   const tagsFinal = [...new Set(tags)];
+   return tagsFinal;
+  }
+
+  function getAllTags () {
+    
+    tagsDom.forEach((tag) => {
+      tags.push(tag.innerHTML)
+    })
+    populateSelect(clearDoubles(tags))
+  }
+
+  function populateSelect(tags) {
+
+    for(let i=0; i<tags.length; i++) {
+          let newOption = document.createElement("option");
+          let newContent = document.createTextNode(tags[i]);
+          newOption.appendChild(newContent);
+          selectDom[0].appendChild(newOption);
+    }
+  }
+
+  function changeCardColor(e) {
+    for (let i=0; i<tagsDom.length; i++) {
+      tagsDom[i].parentNode.classList.remove("tagged")
+      if (e.target.value == tagsDom[i].textContent) {
+        tagsDom[i].parentNode.setAttribute("background-color", "red")
+        tagsDom[i].parentNode.classList.toggle("tagged")
+      }
+    }
+    
+  }
+
+  selectDom[0].addEventListener("change", changeCardColor)
+
+
+
   // Fonction pour mettre à jour la liste des cartes
   function updateCardsList() {
     cards = Array.from(document.querySelectorAll(".card"));
